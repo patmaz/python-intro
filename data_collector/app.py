@@ -1,8 +1,9 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from mailing import send_email
 
 app=Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI']='postgresql://postgres:postgres@localhost/app'
+app.config['SQLALCHEMY_DATABASE_URI']='postgresql://postgres:postgres123@localhost/app'
 db=SQLAlchemy(app)
 
 class Data(db.Model):
@@ -15,19 +16,25 @@ class Data(db.Model):
         self.email=email
         self.number=number
 
-#db.create_all()
+# db.create_all()
 
 @app.route('/endpoint', methods=['GET', 'POST'])
 def endpoint():
     if request.method == 'POST':
-        data = request.get_json(request.data)
+        dataJson = request.get_json(request.data)
         try:
-            email=data['email']
-            number=data['number']
+            email=dataJson['email']
+            number=dataJson['number']
+            data=Data(email, number)
+            db.session.add(data)
+            db.session.commit()
         except:
             return jsonify('wrong data'), 400
+
+        send_email(email, number)
+
         return jsonify(
-            data
+            dataJson
         ), 200
 
 @app.route('/ping')
