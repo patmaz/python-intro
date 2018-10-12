@@ -2,12 +2,12 @@ from email.mime.text import MIMEText
 import smtplib 
 import secrets
 
-def send_email(email, data_number):
+def send_email(email, data_number, average_number):
     from_email="patundmaz@gmail.com"
     from_password=secrets.get_password()
     to_email=email
 
-    message=MIMEText("You send number <strong>%s</strong>." % data_number, 'html')
+    message=MIMEText("You send number <strong>%s</strong>. Avg us <strong>%s</strong>" % (data_number, average_number), 'html')
     message['Subject']="mailing test"
     message['To']=to_email
     message['From']=from_email
